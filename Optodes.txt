@@ -1,0 +1,6 @@
+Postcentral_L = S3_D3 - S3_D2 - S2_D2 - S2_D1
+Postcentral_R = S7_D7 - S7_D6 - S6_D6 - S6_D5
+Parietal_Inf_L = S1_D2
+Parietal_Inf_R = S5_D6
+SupraMarginal_L = S1_D2 - S3_D2
+SupraMarginal_R = S5_D6 - S7_D6
