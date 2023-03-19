@@ -63,13 +63,11 @@ for n,i in enumerate(channels):
     if num == len(channels):
         break
     fig = nirs_analysis.plot_averages(grip_evokeds,channels[num], channels[num+1])
-    fig.savefig("/Users/boramert/Desktop/Yüksek Lisans/Python_Kod/figs/Grip/Grip_Average_" + str(num) + ".png",dpi=400)
+    fig.savefig("/Users/boramert/Desktop/Yüksek Lisans/Python_Kod/figs/Grip/Grip_Average_" + str(n) + ".png",dpi=400)
 
     fig = nirs_analysis.plot_averages(nback_evokeds,channels[num], channels[num+1])
-    fig.savefig("/Users/boramert/Desktop/Yüksek Lisans/Python_Kod/figs/Nback/Nback_Average_" + str(num) + ".png",dpi=400)
+    fig.savefig("/Users/boramert/Desktop/Yüksek Lisans/Python_Kod/figs/Nback/Nback_Average_" + str(n) + ".png",dpi=400)
 
     fig = nirs_analysis.plot_averages(oddball_evokeds,channels[num], channels[num+1])
-    fig.savefig("/Users/boramert/Desktop/Yüksek Lisans/Python_Kod/figs/Oddball/Oddball_Average_" + str(num) + ".png",dpi=400)
+    fig.savefig("/Users/boramert/Desktop/Yüksek Lisans/Python_Kod/figs/Oddball/Oddball_Average_" + str(n) + ".png",dpi=400)
     num = num+2
-    
-#Kanalları düzelt
