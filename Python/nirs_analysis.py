@@ -133,19 +133,10 @@ for num,i in enumerate(subjects[0]):
     #Get Events
     events, event_dict = mne.events_from_annotations(filt_haemo)
     picks_fnirs = mne.pick_types(filt_haemo.info, fnirs=True, exclude='bads')
-    reject_criteria = dict(hbo=40e-6)
+    reject_criteria = dict(hbo=6e-7)
     #Get Epochs
-    tmin = -2
-    tmax = 5
-    epochs = mne.Epochs(filt_haemo, events, event_id = event_dict, picks = picks_fnirs,
-                        reject = reject_criteria, tmin = tmin, tmax = tmax,
-                        proj = True, baseline = (None, 0) , preload = True,
-                        detrend = 1, verbose = False)
-    #Plot Removed Epochs
-    epochs.plot_drop_log(subject = epochs.info['subject_info']['his_id'])
-    #______________________________GLM______________________________
     if filt_haemo.experiment == 'Grip':
-            stim = 30
+            stim = 20
             conditions = ['Rest', 'Block']
     elif filt_haemo.experiment == 'Nback':
             stim = 27.5
@@ -153,6 +144,15 @@ for num,i in enumerate(subjects[0]):
     elif filt_haemo.experiment == 'Oddball':
             stim = 37.4
             conditions = ['Std', 'Odd']
+    tmin = prestim
+    tmax = stim+poststim
+    epochs = mne.Epochs(filt_haemo, events, event_id = event_dict, picks = picks_fnirs,
+                        reject = reject_criteria, tmin = tmin, tmax = tmax,
+                        proj = True, baseline = (prestim, 0) , preload = True,
+                        detrend = 1, verbose = False)
+    #Plot Removed Epochs
+    epochs.plot_drop_log(subject = epochs.info['subject_info']['his_id'])
+    #______________________________GLM______________________________
     #Create Design Matrix
     design_matrix = make_first_level_design_matrix(filt_haemo,
                                                    drift_model = 'cosine',
@@ -195,12 +195,6 @@ for num,i in enumerate(subjects[0]):
     Dorsolateral_Prefrontal_Cortex_L = [[4,4],[4,3],[4,2],[2,4]]
     Dorsolateral_Prefrontal_Cortex_R = [[8,8],[8,7],[8,6],[6,8]]
 
-    # Primary_Motor_Cortex_L = [[1, 1], [2, 1], [4, 4], [5, 5], [6, 5]]
-    # Premotor_Cortex = [[2, 1], [2, 2], [2, 4], [3, 2], [3, 3], [4, 2], [5, 6], [6, 5], [6, 6], [6, 8], [7, 6], [7, 7], [8, 6]]
-    # Somatosensory_Cortex = [[1, 1], [5, 5], [5, 6]]
-    # Dorselateral_Prefrontal_Cortex = [[3, 3], [3, 4], [7, 7], [8, 7], [8, 8]]
-    # Frontal_Eye_Fields = [[4, 2], [3, 4], [4, 4], [8, 6], [8, 7], [8, 8]]
-
     groups = dict(Primary_Motor_Cortex_L =picks_pair_to_idx(filt_haemo, Primary_Motor_Cortex_L, on_missing='ignore'),
                   Primary_Motor_Cortex_R =picks_pair_to_idx(filt_haemo, Primary_Motor_Cortex_R, on_missing='ignore'),
                   Pre_Supplementary_Motor_Cortex_L =picks_pair_to_idx(filt_haemo, Pre_Supplementary_Motor_Cortex_L, on_missing='ignore'),
@@ -222,11 +216,14 @@ for num,i in enumerate(subjects[0]):
     filename = '/Users/boramert/Desktop/Yüksek Lisans/Exports/GLM_Data/' + i.info['subject_info']['his_id'] + '_' + i.experiment + '_GLM.csv' 
     df.to_csv(filename, index = False)
 
-    filename = '/Users/boramert/Desktop/Yüksek Lisans/Exports/fNIRS_Data/' + filt_haemo.info['subject_info']['his_id'] + '_' + filt_haemo.experiment + '_epochs.fif' 
-    i.save(filename, overwrite = True)
+    filename = '/Users/boramert/Desktop/Yüksek Lisans/Exports/fNIRS_Data/' + filt_haemo.info['subject_info']['his_id'] + '_' + filt_haemo.experiment + '_data.fif' 
+    filt_haemo.save(filename, overwrite = True)
     mne.write_events('/Users/boramert/Desktop/Yüksek Lisans/Exports/fNIRS_Data/' + filt_haemo.info['subject_info']['his_id'] + '_' + filt_haemo.experiment + '_events.fif'
                      , epochs.events
                      , overwrite = True)
+    
+    filename = '/Users/boramert/Desktop/Yüksek Lisans/Exports/fNIRS_Data/' + filt_haemo.info['subject_info']['his_id'] + '_' + filt_haemo.experiment + '_epochs.fif'
+    epochs.save(filename, overwrite = True)
 
 
 
