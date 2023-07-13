@@ -15,7 +15,7 @@ for i = 1:n_subjects
         subject = sprintf("0%d",i);
     end
 
-    filename = sprintf("EMG_%s.mat",subject);
+    filename = sprintf("/Users/boramert/Desktop/Yüksek Lisans/Data_Results/Data/EMG_Data/EMG/EMG_%s.mat",subject);
     if exist(filename,'file')
         data = load(filename);
 

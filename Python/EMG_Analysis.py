@@ -2,17 +2,12 @@ import numpy as np
 import matplotlib.pyplot as plt
 import bioread
 
-import scipy.io
-emg = scipy.io.loadmat('EMG_001.mat')
+data = bioread.read_file('/Users/boramert/Desktop/Yüksek Lisans/Data_Results/Data/EMG_Data/Acq/EMG_001.acq')
+emg = data.channels[0].data
+dyno = data.channels[1].data
+t = data.channels[0].time_index
 
-data = bioread.read_file('Acq/EMG_001.acq')
-
-# plt.subplot(2,1,1)
-# plt.plot(emg['data'][:,0])
-
-# plt.subplot(2,1,2)
-# plt.plot(emg['data'][:,1])
-
-# plt.show()
-
-print(data)
+plt.figure(dpi=1200)
+plt.plot(t,emg, linewidth = 0.5)
+plt.plot(t,dyno*0.01, linewidth = 0.5)
+plt.show()

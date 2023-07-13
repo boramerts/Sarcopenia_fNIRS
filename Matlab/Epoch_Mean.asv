@@ -7,7 +7,6 @@ addpath /Users/boramert/Documents/MATLAB/fieldtrip-20221223/external/mne
 ft_defaults
 
 reject = ["003","004","005", "008", "010", "011","032","034"];
-% reject = ["001","003","004","005","007", "008", "010", "011","012","018","019","021","026","028","029","032","034","033","035","036","038","039"];
 reject_oddball = "019";
 reject_nback = "018";
 reject_grip = "018";
@@ -141,63 +140,80 @@ for exp = 1:3
             signal = data{exp}{1,subj}.trial{1,cond};
             ROI = setROI(signal,data{exp}{1,subj}.label);
             data{exp}{4,subj}{1,cond} = ROI;
-%             for roi = 1:length(ROI)
-%                 if cond == 1
-%                     if (max(ROI{roi,1}) >= 1.5*10^-7) |  (min(ROI{roi,1}) <= -1.5*10^-7)
-%                         reject(end+1) = data{exp}{3,subj};
-%                         break;
-%                     end
-%                 end
-%                 data{exp}{4,subj}{1,cond}{roi,1} = ROI{roi,1};
-%                 data{exp}{4,subj}{1,cond}{roi,2} = ROI{roi,2};
-%             end
         end
     end
 end
 
+% Get Mean data and export to Excel
+meanData_Grip = cell(n_subjects,14);
+
+meanData_Nback = cell(n_subjects,14);
+
+meanData_Oddball = cell(n_subjects,14);
+
+
+% [meanData_Grip, meanData_Nback, meanData_Oddball] = getEpochMeans(data);
+% 
+% writecell(meanData_Grip,'/Users/boramert/Desktop/Yüksek Lisans/Data_Results/Data/fNIRS_Data/Epoch_Means/meanData_Grip.xls');
+% writecell(meanData_Nback,'/Users/boramert/Desktop/Yüksek Lisans/Data_Results/Data/fNIRS_Data/Epoch_Means/meanData_Nback.xls');
+% writecell(meanData_Oddball,'/Users/boramert/Desktop/Yüksek Lisans/Data_Results/Data/fNIRS_Data/Epoch_Means/meanData_Oddball.xls');
+
+clearvars -except data meanData_Grip meanData_Nback meanData_Oddball
+
 clc;
 
-% Plot Data
-% set(0,'DefaultFigureVisible','off');
-% titl = ["Rest-Control","Block-Control","Rest-Sarco","Block-Sarco";...
-%         "O-Back-Control","2-Back-Control","O-Back-Sarco","2-Back-Sarco";...
-%         "Std-Control","Odd-Control","Std-Sarco","Odd-Sarco"];
-% exps = ["Grip","N-Back","Oddball"];
+function [meanData_Grip, meanData_Nback, meanData_Oddball] = getEpochMeans(data)
+meanData_Grip{1,13} = "Condition";
+meanData_Nback{1,13} = "Condition";
+meanData_Oddball{1,13} = "Condition";
+meanData_Grip{1,14} = "Group";
+meanData_Nback{1,14} = "Group";
+meanData_Oddball{1,14} = "Group";
+
+for exp = 1:3
+    for subj = 1:length(data{exp})
+        for cond = 1:2
+            for roi = 1:12
+                m = mean(data{exp}{4,subj}{cond}{roi,1});
+                if exp == 1
+                    trials = ["Rest","Block"];
+                    meanData_Grip{}
+                elseif exp == 2
+                    trials = ["0-Back","2-Back"];
+                else
+                    trials = ["Std","Odd"];
+                end
+            end
+        end
+    end
+end
+
 % for exp = 1:3
-%     for roi = 1:13
-%         figure("Name",sprintf("%s %s",exps(exp),data{exp}{4,1}{1,1}{roi,2}));
-%         t = tiledlayout(2,2);
-%         ax1 = nexttile;
-%         ax2 = nexttile;
-%         ax3 = nexttile;
-%         ax4 = nexttile;
-%         axs = [ax1,ax3,ax2,ax4];
-%         for subj = 1:length(data{exp})
-%             if strcmp(data{exp}{4,1}{1,1}{roi,2},data{exp}{4,subj}{1,1}{roi,2})
-%                 for cond = 1:2
-%                     if strcmp(data{exp}{2,subj},"Control")
-%                         plot(axs(cond),data{exp}{4,subj}{1,cond}{roi,1},"r");
-%                         ylim(axs(cond),[(-2*10^-7) (2*10^-7)]);
-%                         title(axs(cond),titl(exp,cond));
-%                         hold(axs,"on");
-%                     else
-%                         plot(axs(cond+2),data{exp}{4,subj}{1,cond}{roi,1},"r");
-%                         ylim(axs(cond+2),[(-2*10^-7) (2*10^-7)]);
-%                         title(axs(cond+2),titl(exp,cond+2));
-%                         hold(axs,"on");
-%                     end
+%     for subj = 1:length(data{exp})
+%         for cond = 1:2
+%             for roi = 1:12
+%                 m = mean(data{exp}{4,subj}{cond}{roi,1});
+%                 if exp == 1
+%                     trials = ["Rest","Block"];
+%                     meanData_Grip{1,(2*roi)-(cond-1)} = sprintf("%s %s",data{exp}{4,subj}{cond}{roi,2},trials(cond));
+%                     meanData_Grip{subj+1,(2*roi)-(cond-1)} = m;
+%                     meanData_Grip{subj+1,25} = data{exp}{2,subj};
+%                 elseif exp == 2
+%                     trials = ["0-Back","2-Back"];
+%                     meanData_Nback{1,(2*roi)-(cond-1)} = sprintf("%s %s",data{exp}{4,subj}{cond}{roi,2},trials(cond));
+%                     meanData_Nback{subj+1,(2*roi)-(cond-1)} = m;
+%                     meanData_Nback{subj+1,25} = data{exp}{2,subj};
+%                 else
+%                     trials = ["Std","Odd"];
+%                     meanData_Nback{1,(2*roi)-(cond-1)} = sprintf("%s %s",data{exp}{4,subj}{cond}{roi,2},trials(cond));
+%                     meanData_Oddball{subj+1,(2*roi)-(cond-1)} = m;
+%                     meanData_Oddball{subj+1,25} = data{exp}{2,subj};
 %                 end
 %             end
 %         end
-%         f = gcf;
-%         name = sprintf('/Users/boramert/Desktop/Yüksek Lisans/Matlab_Kod/SpaghettiPlot/%s %s.png',exps(exp),data{exp}{4,1}{1,1}{roi,2});
-%         exportgraphics(f,name,'Resolution',300);
 %     end
 % end
-% close all;
-% set(0,'DefaultFigureVisible','on');
-
-
+end
 
 function ROI = addToROI(data,ROI,index)
 disp(inputname(1));
@@ -248,3 +264,36 @@ ROI = addToROI(DPC_L_hbr,ROI,10);
 ROI = addToROI(DPC_R_hbo,ROI,11);
 ROI = addToROI(DPC_R_hbr,ROI,12);
 end
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
