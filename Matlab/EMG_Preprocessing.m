@@ -24,14 +24,14 @@ for i = 1:n_subjects
         clear data;
 
         t = linspace(0,length(emg/1000),length(emg));
-        
+
         [b,a] = butter(4,[50,300]/500,'bandpass');
         emg_filt = filtfilt(b,a,emg);
         emg_rect = abs(emg);
         emg_filt_rect = abs(emg_filt);
 
         sig = sqrt(movmean(emg_filt_rect.^2, 250));
-        smooth = movmean(sig, 20000);
+        smooth = movmean(sig, 10000);
 
         [EMG{i+1,:}] = deal(subject,emg,dyno,emg_filt_rect,smooth);
 
